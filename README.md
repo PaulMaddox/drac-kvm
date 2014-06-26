@@ -36,9 +36,10 @@ If you don't have Go installed already on your system, then included in this rep
 * [Linux 64bit](https://github.com/PaulMaddox/drac-kvm/blob/master/binaries/drac.linux_64bit?raw=true)
 
 * [Mac OSX 64bit](https://github.com/PaulMaddox/drac-kvm/blob/master/binaries/drac.osx_64bit?raw=true)
-* 
+
 
 Credits
 ----
 @jamesdotcuff's helpful blog post:
+
 http://blog.jcuff.net/2013/10/fun-with-idrac.html

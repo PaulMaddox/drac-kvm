@@ -33,6 +33,6 @@ Installing (pre built binaries)
 
 If you don't have Go installed already on your system, then included in this repository are some prebuilt binaries:
 
-[Linux 64bit](https://raw.github.com/paulmaddox/drac-kvm/)
-[OSX 64bit](https://raw.github.com/paulmaddox/drac-kvm/)
+* [Linux 64bit](https://github.com/PaulMaddox/drac-kvm/blob/master/binaries/drac.linux_64bit?raw=true)
 
+* [Mac OSX 64bit](https://github.com/PaulMaddox/drac-kvm/blob/master/binaries/drac.osx_64bit?raw=true)

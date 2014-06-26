@@ -10,10 +10,11 @@ import (
 	"github.com/ogier/pflag"
 )
 
-var host *string = pflag.StringP("host", "h", "some.hostname.com", "The DRAC host (or IP)")
-var username *string = pflag.StringP("username", "u", "root", "The DRAC username")
-var password *string = pflag.StringP("password", "p", "calvin", "The DRAC password")
-var javaws *string = pflag.StringP("javaws", "j", "/usr/bin/javaws", "The path to javaws binary")
+// CLI flags
+var host = pflag.StringP("host", "h", "some.hostname.com", "The DRAC host (or IP)")
+var username = pflag.StringP("username", "u", "root", "The DRAC username")
+var password = pflag.BoolP("password", "p", false, "Prompt for password (optional, will use 'calvin' if not present)")
+var javaws = pflag.StringP("javaws", "j", "/usr/bin/javaws", "The path to javaws binary")
 
 func main() {
 
@@ -25,10 +26,23 @@ func main() {
 		log.Fatalf("No javaws binary found at %s", *javaws)
 	}
 
+	var pass string
+	if *password {
+		// Prompt for a password
+		fmt.Print("Password: ")
+		_, err := fmt.Scan(&pass)
+		if err != nil {
+			log.Fatalf("Unable to read password from CLI")
+		}
+	} else {
+		// Use default DRAC password
+		pass = "calvin"
+	}
+
 	drac := &DRAC{
 		Host:     *host,
 		Username: *username,
-		Password: *password,
+		Password: pass,
 	}
 
 	// Generate a DRAC viewer JNLP
@@ -44,13 +58,9 @@ func main() {
 
 	// Launch it!
 	log.Printf("Launching DRAC KVM session to %s", drac.Host)
-	output, err := exec.Command(*javaws, filename).Output()
-	if err != nil {
-		log.Fatalf("Unable to launch drac (%s)", err)
+	if _, err := exec.Command(*javaws, filename).Output(); err != nil {
+		log.Fatalf("Unable to launch DRAC (%s)", err)
 	}
-
-	// Show any output from the javaws command
-	fmt.Print(output)
 
 	// Remove the generated viewer JNLP
 	os.Remove(filename)

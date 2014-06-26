@@ -12,17 +12,24 @@ import (
 	"time"
 )
 
+// DRAC contains all of the information required
+// to connect to a Dell DRAC KVM
 type DRAC struct {
 	Host     string
 	Username string
 	Password string
 }
 
-var templates map[int]string = map[int]string{
+// Templates is a map of each viewer.jnlp template for
+// the various Dell iDRAC versions, keyed by version number
+var Templates = map[int]string{
 	6: viewer6,
 	7: viewer7,
 }
 
+// GetVersion attempts to detect the iDRAC version by checking
+// if various known libraries are available via HTTP GET requests.
+// Retursn the version if found, or -1 if unknown
 func (d *DRAC) GetVersion() int {
 
 	log.Print("Detecting iDRAC version...")
@@ -68,6 +75,8 @@ func (d *DRAC) GetVersion() int {
 
 }
 
+// Viewer returns a viewer.jnlp template filled out with the
+// necessary details to connect to a particular DRAC host
 func (d *DRAC) Viewer() (string, error) {
 
 	// Check we have a valid DRAC viewer template for this DRAC version
@@ -78,7 +87,7 @@ func (d *DRAC) Viewer() (string, error) {
 
 	log.Printf("Found iDRAC version %d", version)
 
-	if _, ok := templates[version]; !ok {
+	if _, ok := Templates[version]; !ok {
 		msg := fmt.Sprintf("no support for DRAC v%d", version)
 		return "", errors.New(msg)
 	}
@@ -86,7 +95,7 @@ func (d *DRAC) Viewer() (string, error) {
 	// Generate a JNLP viewer from the template
 	// Injecting the host/user/pass information
 	buff := bytes.NewBufferString("")
-	err := template.Must(template.New("viewer").Parse(templates[version])).Execute(buff, d)
+	err := template.Must(template.New("viewer").Parse(Templates[version])).Execute(buff, d)
 	return buff.String(), err
 
 }

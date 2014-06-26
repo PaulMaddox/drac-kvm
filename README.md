@@ -5,14 +5,14 @@ Fed up of logging into the DRAC web interface just to launch a KVM session?
 This simple Go program should help ease the pain.
 
 ```bash
-$ drac --help
+$ drac-kvm --help
 Usage of drac
   -h, --host="some.hostname.com": The DRAC host (or IP)
   -j, --javaws="/usr/bin/javaws": The path to javaws binary
   -p, --password="calvin": The DRAC password
   -u, --username="root": The DRAC username
 
-$ drac -h 10.25.1.100 
+$ drac-kvm -h 10.25.1.100 
 2014/06/26 14:17:02 Launching DRAC KVM session to 10.25.1.100
 ```
 

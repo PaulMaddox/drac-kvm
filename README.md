@@ -15,8 +15,11 @@ Usage of drac
 $ drac-kvm -h 10.25.1.100 
 2014/06/26 14:17:02 Launching DRAC KVM session to 10.25.1.100
 ```
+This has been tested on the following Dell servers:
 
-It has been tested on Dell's 11th gen servers (eg: PowerEdge R720 etc).
+ * 11th Generation (eg: Dell R710 / iDRAC6)
+
+ * 12th Generation (eg: Dell R720 / iDRAC7)
 
 It requires that you have java installed on your machine (specifically the `javaws` binary).
 

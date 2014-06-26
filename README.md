@@ -12,8 +12,16 @@ Usage of drac-kvm
   -p, --password=false: Prompt for password (optional, will use 'calvin' if not present)
   -u, --username="root": The DRAC username
 
+# Example using default dell credentials (root/calvin)
 $ drac-kvm -h 10.25.1.100
 2014/06/26 16:01:11 Detecting iDRAC version...
+2014/06/26 16:01:11 Found iDRAC version 7
+2014/06/26 16:01:11 Launching DRAC KVM session to 10.25.1.100
+
+# Example using custom credentials
+$ drac-kvm -h 10.25.1.100 -u bob -p
+Password: **********
+2014/06/26 16:01:11 Detecting iRAC version...
 2014/06/26 16:01:11 Found iDRAC version 7
 2014/06/26 16:01:11 Launching DRAC KVM session to 10.25.1.100
 ```

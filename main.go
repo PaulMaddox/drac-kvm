@@ -39,7 +39,7 @@ func main() {
 
 	// Write out the DRAC viewer to a temporary file so that
 	// we can launch it with the javaws program
-	filename := os.TempDir() + "drac_" + drac.Host + ".jnlp"
+	filename := os.TempDir() + string(os.PathSeparator) + "drac_" + drac.Host + ".jnlp"
 	ioutil.WriteFile(filename, []byte(viewer), 0600)
 
 	// Launch it!

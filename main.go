@@ -6,17 +6,33 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	xs"os/user"
 
 	"github.com/ogier/pflag"
+	"github.com/Unknwon/goconfig"
 )
 
 // CLI flags
-var host = pflag.StringP("host", "h", "some.hostname.com", "The DRAC host (or IP)")
-var username = pflag.StringP("username", "u", "root", "The DRAC username")
-var password = pflag.BoolP("password", "p", false, "Prompt for password (optional, will use 'calvin' if not present)")
+var _host = pflag.StringP("host", "h", "some.hostname.com", "The DRAC host (or IP)")
+var _username = pflag.StringP("username", "u", "", "The DRAC username")
+var _password = pflag.BoolP("password", "p", false, "Prompt for password (optional, will use 'calvin' if not present)")
 var javaws = pflag.StringP("javaws", "j", "/usr/bin/javaws", "The path to javaws binary")
 
+
+func prompt_password() string {
+	var pass string
+	fmt.Print("Password: ")
+	_, err := fmt.Scan(&pass)
+	if err != nil {
+		log.Fatalf("Unable to read password from CLI")
+	}
+	return pass
+}
+
 func main() {
+	var host string
+	var username = "root"
+	var password = "calvin"
 
 	// Parse the CLI flags
 	pflag.Parse()
@@ -26,23 +42,54 @@ func main() {
 		log.Fatalf("No javaws binary found at %s", *javaws)
 	}
 
-	var pass string
-	if *password {
-		// Prompt for a password
-		fmt.Print("Password: ")
-		_, err := fmt.Scan(&pass)
-		if err != nil {
-			log.Fatalf("Unable to read password from CLI")
+	// Search for existing config file
+	usr, _ := user.Current()
+	cfg, _ := goconfig.LoadConfigFile(usr.HomeDir + "/.drackvmrc")
+
+	// Finding host in config file or using the one passed in param
+	host = *_host
+	var host_found bool = false
+	if cfg != nil {
+		_, err := cfg.GetSection(*_host)
+		if err == nil {
+			value, err := cfg.GetValue(*_host, "host")
+			if err == nil {
+				host_found = true
+				host = value
+			} else {
+				host_found = true
+				host = *_host
+			}
 		}
+	}
+
+	if *_username != "" {
+		username = *_username
 	} else {
-		// Use default DRAC password
-		pass = "calvin"
+		if cfg != nil && host_found {
+			value, err := cfg.GetValue(*_host, "username")
+			if err == nil {
+				username = value
+			}
+		}
+	}
+
+	// If password not set, prompt
+	if *_password {
+		password = prompt_password()
+	} else {
+		if cfg != nil && host_found {
+			value, err := cfg.GetValue(*_host, "password")
+			if err == nil {
+				password = value
+			}
+		}
 	}
 
 	drac := &DRAC{
-		Host:     *host,
-		Username: *username,
-		Password: pass,
+		Host:     host,
+		Username: username,
+		Password: password,
 	}
 
 	// Generate a DRAC viewer JNLP

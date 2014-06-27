@@ -41,7 +41,7 @@ If you already have Go configured on your system then you can just run the follo
 $ go install github.com/paulmaddox/drac-kvm
 ```
 
-Installing (pre built binaries) 
+Installing (pre built binaries)
 ----
 
 If you don't have Go installed already on your system, then included in this repository are some prebuilt binaries:
@@ -50,7 +50,44 @@ If you don't have Go installed already on your system, then included in this rep
 
 * [Mac OSX 64bit](https://github.com/PaulMaddox/drac-kvm/blob/master/binaries/drac.osx_64bit?raw=true)
 
+Configuration file
+----
 
+You can create a configuration file
+```bash
+$ cat ~/.drackvmrc
+[192.168.0.42]
+username = foo
+password = bar
+
+[web-1]
+host = 10.33.0.1
+username = root
+password = password4root
+
+[web-2]
+host = 10.33.0.2
+username = root
+
+# Use IP, username and password from drackvmrc for this ip
+$ drac-kvm -h 192.168.0.42
+2014/06/26 16:01:11 Detecting iRAC version...
+2014/06/26 16:01:11 Found iDRAC version 7
+2014/06/26 16:01:11 Launching DRAC KVM session to 192.168.0.42
+
+# Same for host alias web-1
+$ drac-kvm -h web-1
+2014/06/26 16:01:11 Detecting iRAC version...
+2014/06/26 16:01:11 Found iDRAC version 7
+2014/06/26 16:01:11 Launching DRAC KVM session to 10.33.0.1
+
+# Specify -p option in order to do not use defaut password
+$ drac-kvm -h web-2 -p
+Password: **********
+2014/06/26 16:01:11 Detecting iRAC version...
+2014/06/26 16:01:11 Found iDRAC version 7
+2014/06/26 16:01:11 Launching DRAC KVM session to 10.33.0.2
+```
 Credits
 ----
 @jamesdotcuff's helpful blog post:

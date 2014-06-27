@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	xs"os/user"
+	"os/user"
 
 	"github.com/ogier/pflag"
 	"github.com/Unknwon/goconfig"

@@ -19,7 +19,7 @@ var _password = pflag.BoolP("password", "p", false, "Prompt for password (option
 var javaws = pflag.StringP("javaws", "j", "/usr/bin/javaws", "The path to javaws binary")
 
 
-func prompt_password() string {
+func promptPassword() string {
 	var pass string
 	fmt.Print("Password: ")
 	_, err := fmt.Scan(&pass)
@@ -48,16 +48,16 @@ func main() {
 
 	// Finding host in config file or using the one passed in param
 	host = *_host
-	var host_found bool = false
+	hostFound := false
 	if cfg != nil {
 		_, err := cfg.GetSection(*_host)
 		if err == nil {
 			value, err := cfg.GetValue(*_host, "host")
 			if err == nil {
-				host_found = true
+				hostFound = true
 				host = value
 			} else {
-				host_found = true
+				hostFound = true
 				host = *_host
 			}
 		}
@@ -66,7 +66,7 @@ func main() {
 	if *_username != "" {
 		username = *_username
 	} else {
-		if cfg != nil && host_found {
+		if cfg != nil && hostFound {
 			value, err := cfg.GetValue(*_host, "username")
 			if err == nil {
 				username = value
@@ -76,9 +76,9 @@ func main() {
 
 	// If password not set, prompt
 	if *_password {
-		password = prompt_password()
+		password = promptPassword()
 	} else {
-		if cfg != nil && host_found {
+		if cfg != nil && hostFound {
 			value, err := cfg.GetValue(*_host, "password")
 			if err == nil {
 				password = value

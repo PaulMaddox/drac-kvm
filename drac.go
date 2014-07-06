@@ -58,7 +58,7 @@ func (d *DRAC) GetVersion() int {
 
 	// Check for iDRAC7 specific libs
 	if response, err := client.Get("https://" + d.Host + "/software/avctKVMIOMac64.jar"); err == nil {
-		response.Body.Close()
+		defer response.Body.Close()
 		if response.StatusCode == 200 {
 			return 7
 		}
@@ -66,7 +66,7 @@ func (d *DRAC) GetVersion() int {
 
 	// Check for iDRAC6 specific libs
 	if response, err := client.Get("https://" + d.Host + "/software/jpcsc.jar"); err == nil {
-		response.Body.Close()
+		defer response.Body.Close()
 		if response.StatusCode == 200 {
 			return 6
 		}

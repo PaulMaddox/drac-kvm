@@ -8,16 +8,16 @@ import (
 	"os/exec"
 	"os/user"
 
-	"github.com/ogier/pflag"
 	"github.com/Unknwon/goconfig"
+	"github.com/ogier/pflag"
 )
 
 // CLI flags
 var _host = pflag.StringP("host", "h", "some.hostname.com", "The DRAC host (or IP)")
 var _username = pflag.StringP("username", "u", "", "The DRAC username")
 var _password = pflag.BoolP("password", "p", false, "Prompt for password (optional, will use 'calvin' if not present)")
+var _version = pflag.IntP("version", "v", -1, "iDRAC version (6 or 7)")
 var javaws = pflag.StringP("javaws", "j", "/usr/bin/javaws", "The path to javaws binary")
-
 
 func promptPassword() string {
 	var pass string
@@ -45,6 +45,7 @@ func main() {
 	// Search for existing config file
 	usr, _ := user.Current()
 	cfg, _ := goconfig.LoadConfigFile(usr.HomeDir + "/.drackvmrc")
+	version := *_version
 
 	// Finding host in config file or using the one passed in param
 	host = *_host
@@ -90,6 +91,7 @@ func main() {
 		Host:     host,
 		Username: username,
 		Password: password,
+		Version:  version,
 	}
 
 	// Generate a DRAC viewer JNLP

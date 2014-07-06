@@ -18,6 +18,7 @@ type DRAC struct {
 	Host     string
 	Username string
 	Password string
+	Version  int
 }
 
 // Templates is a map of each viewer.jnlp template for
@@ -79,8 +80,14 @@ func (d *DRAC) GetVersion() int {
 // necessary details to connect to a particular DRAC host
 func (d *DRAC) Viewer() (string, error) {
 
+	var version int
+
 	// Check we have a valid DRAC viewer template for this DRAC version
-	version := d.GetVersion()
+	if d.Version < 0 {
+		version = d.GetVersion()
+	} else {
+		version = d.Version
+	}
 	if version < 0 {
 		return "", errors.New("unable to detect DRAC version")
 	}

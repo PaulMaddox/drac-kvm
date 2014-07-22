@@ -8,8 +8,9 @@ import (
 	"os/exec"
 	"os/user"
 
-	"github.com/ogier/pflag"
 	"github.com/Unknwon/goconfig"
+	"github.com/howeyc/gopass"
+	"github.com/ogier/pflag"
 )
 
 // CLI flags
@@ -18,15 +19,9 @@ var _username = pflag.StringP("username", "u", "", "The DRAC username")
 var _password = pflag.BoolP("password", "p", false, "Prompt for password (optional, will use 'calvin' if not present)")
 var javaws = pflag.StringP("javaws", "j", "/usr/bin/javaws", "The path to javaws binary")
 
-
 func promptPassword() string {
-	var pass string
 	fmt.Print("Password: ")
-	_, err := fmt.Scan(&pass)
-	if err != nil {
-		log.Fatalf("Unable to read password from CLI")
-	}
-	return pass
+	return string(gopass.GetPasswd())
 }
 
 func main() {

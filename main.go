@@ -7,9 +7,10 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
+	"time"
 
-	"github.com/ogier/pflag"
 	"github.com/Unknwon/goconfig"
+	"github.com/ogier/pflag"
 )
 
 // CLI flags
@@ -17,7 +18,7 @@ var _host = pflag.StringP("host", "h", "some.hostname.com", "The DRAC host (or I
 var _username = pflag.StringP("username", "u", "", "The DRAC username")
 var _password = pflag.BoolP("password", "p", false, "Prompt for password (optional, will use 'calvin' if not present)")
 var javaws = pflag.StringP("javaws", "j", "/usr/bin/javaws", "The path to javaws binary")
-
+var _delay = pflag.IntP("delay", "d", 10, "Number of seconds to delay for javaws to start up & read jnlp before deleting it")
 
 func promptPassword() string {
 	var pass string
@@ -102,14 +103,14 @@ func main() {
 	// we can launch it with the javaws program
 	filename := os.TempDir() + string(os.PathSeparator) + "drac_" + drac.Host + ".jnlp"
 	ioutil.WriteFile(filename, []byte(viewer), 0600)
+	defer os.Remove(filename)
 
 	// Launch it!
 	log.Printf("Launching DRAC KVM session to %s", drac.Host)
-	if _, err := exec.Command(*javaws, filename).Output(); err != nil {
+	if err := exec.Command(*javaws, filename).Start(); err != nil {
+		os.Remove(filename)
 		log.Fatalf("Unable to launch DRAC (%s)", err)
 	}
-
-	// Remove the generated viewer JNLP
-	os.Remove(filename)
-
+	// Give javaws a few seconds to start & read the jnlp
+	time.Sleep(time.Duration(*_delay) * time.Second)
 }

@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
+	"time"
 
 	"github.com/Unknwon/goconfig"
 	"github.com/howeyc/gopass"
@@ -18,7 +19,8 @@ var _host = pflag.StringP("host", "h", "some.hostname.com", "The DRAC host (or I
 var _username = pflag.StringP("username", "u", "", "The DRAC username")
 var _password = pflag.BoolP("password", "p", false, "Prompt for password (optional, will use 'calvin' if not present)")
 var _version = pflag.IntP("version", "v", -1, "iDRAC version (6 or 7)")
-var javaws = pflag.StringP("javaws", "j", DefaultJavaPath, "The path to javaws binary")
+var _delay = pflag.IntP("delay", "d", 10, "Number of seconds to delay for javaws to start up & read jnlp before deleting it")
+var _javaws = pflag.StringP("javaws", "j", DefaultJavaPath, "The path to javaws binary")
 
 func promptPassword() string {
 	fmt.Print("Password: ")
@@ -34,8 +36,8 @@ func main() {
 	pflag.Parse()
 
 	// Check we have access to the javaws binary
-	if _, err := os.Stat(*javaws); err != nil {
-		log.Fatalf("No javaws binary found at %s", *javaws)
+	if _, err := os.Stat(*_javaws); err != nil {
+		log.Fatalf("No javaws binary found at %s", *_javaws)
 	}
 
 	// Search for existing config file
@@ -100,14 +102,14 @@ func main() {
 	// we can launch it with the javaws program
 	filename := os.TempDir() + string(os.PathSeparator) + "drac_" + drac.Host + ".jnlp"
 	ioutil.WriteFile(filename, []byte(viewer), 0600)
+	defer os.Remove(filename)
 
 	// Launch it!
 	log.Printf("Launching DRAC KVM session to %s", drac.Host)
-	if _, err := exec.Command(*javaws, filename).Output(); err != nil {
+	if err := exec.Command(*_javaws, filename).Start(); err != nil {
+		os.Remove(filename)
 		log.Fatalf("Unable to launch DRAC (%s)", err)
 	}
-
-	// Remove the generated viewer JNLP
-	os.Remove(filename)
-
+	// Give javaws a few seconds to start & read the jnlp
+	time.Sleep(time.Duration(*_delay) * time.Second)
 }

@@ -18,6 +18,7 @@ type DRAC struct {
 	Host     string
 	Username string
 	Password string
+	Version  int
 }
 
 // Templates is a map of each viewer.jnlp template for
@@ -57,7 +58,7 @@ func (d *DRAC) GetVersion() int {
 
 	// Check for iDRAC7 specific libs
 	if response, err := client.Get("https://" + d.Host + "/software/avctKVMIOMac64.jar"); err == nil {
-		response.Body.Close()
+		defer response.Body.Close()
 		if response.StatusCode == 200 {
 			return 7
 		}
@@ -65,7 +66,7 @@ func (d *DRAC) GetVersion() int {
 
 	// Check for iDRAC6 specific libs
 	if response, err := client.Get("https://" + d.Host + "/software/jpcsc.jar"); err == nil {
-		response.Body.Close()
+		defer response.Body.Close()
 		if response.StatusCode == 200 {
 			return 6
 		}
@@ -79,8 +80,14 @@ func (d *DRAC) GetVersion() int {
 // necessary details to connect to a particular DRAC host
 func (d *DRAC) Viewer() (string, error) {
 
+	var version int
+
 	// Check we have a valid DRAC viewer template for this DRAC version
-	version := d.GetVersion()
+	if d.Version < 0 {
+		version = d.GetVersion()
+	} else {
+		version = d.Version
+	}
 	if version < 0 {
 		return "", errors.New("unable to detect DRAC version")
 	}

@@ -9,6 +9,7 @@ import (
 	"os/user"
 
 	"github.com/Unknwon/goconfig"
+	"github.com/howeyc/gopass"
 	"github.com/ogier/pflag"
 )
 
@@ -20,13 +21,8 @@ var _version = pflag.IntP("version", "v", -1, "iDRAC version (6 or 7)")
 var javaws = pflag.StringP("javaws", "j", "/usr/bin/javaws", "The path to javaws binary")
 
 func promptPassword() string {
-	var pass string
 	fmt.Print("Password: ")
-	_, err := fmt.Scan(&pass)
-	if err != nil {
-		log.Fatalf("Unable to read password from CLI")
-	}
-	return pass
+	return string(gopass.GetPasswd())
 }
 
 func main() {

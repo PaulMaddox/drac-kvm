@@ -18,7 +18,7 @@ import (
 var _host = pflag.StringP("host", "h", "some.hostname.com", "The DRAC host (or IP)")
 var _username = pflag.StringP("username", "u", "", "The DRAC username")
 var _password = pflag.BoolP("password", "p", false, "Prompt for password (optional, will use 'calvin' if not present)")
-var _version = pflag.IntP("version", "v", -1, "iDRAC version (6 or 7)")
+var _version = pflag.IntP("version", "v", -1, "iDRAC version (6 or 7) (supermicro ikvm as 1)")
 var _delay = pflag.IntP("delay", "d", 10, "Number of seconds to delay for javaws to start up & read jnlp before deleting it")
 var _javaws = pflag.StringP("javaws", "j", DefaultJavaPath, "The path to javaws binary")
 

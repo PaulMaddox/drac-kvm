@@ -10,7 +10,8 @@ Usage of drac-kvm
   -h, --host="some.hostname.com": The DRAC host (or IP)
   -j, --javaws="/usr/bin/javaws": The path to javaws binary
   -p, --password=false: Prompt for password (optional, will use 'calvin' if not present)
-  -u, --username="root": The DRAC username
+  -u, --username="": The DRAC username
+  -v, --version=-1: iDRAC version (6 or 7) (supermicro ikvm as 1)
 
 # Example using default dell credentials (root/calvin)
 $ drac-kvm -h 10.25.1.100
@@ -30,6 +31,10 @@ This has been tested on the following Dell servers:
  * 11th Generation (eg: Dell R710 / iDRAC6)
 
  * 12th Generation (eg: Dell R720 / iDRAC7)
+
+This has also been tested against a Supermicro based system:
+
+ * X9DR7-LN4F motherboard with ATEN based iKVIM (3.19 fimrware)
 
 It requires that you have java installed on your machine (specifically the `javaws` binary).
 

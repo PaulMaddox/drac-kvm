@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strings"
 	"text/template"
 	"time"
 )
@@ -24,6 +25,7 @@ type DRAC struct {
 // Templates is a map of each viewer.jnlp template for
 // the various Dell iDRAC versions, keyed by version number
 var Templates = map[int]string{
+	1: ikvm169,
 	6: viewer6,
 	7: viewer7,
 }
@@ -69,6 +71,23 @@ func (d *DRAC) GetVersion() int {
 		defer response.Body.Close()
 		if response.StatusCode == 200 {
 			return 6
+		}
+	}
+
+	// SuperMicro login, if we can post to the path, its probably supermicro
+	// further we will then use the Cookie SID for the jnlp file
+	data := fmt.Sprintf("name=%s&pwd=%s", d.Username, d.Password)
+	if response, err := client.Post("https://"+d.Host+"/cgi/login.cgi", "text/plain", strings.NewReader(data)); err == nil {
+		defer response.Body.Close()
+		if response.StatusCode == 200 {
+			for _, c := range response.Cookies() {
+				if "SID" == c.Name && c.Value != "" {
+					log.Print("Setting username/password to cookie SID")
+					d.Username = c.Value
+					d.Password = c.Value
+				}
+			}
+			return 1
 		}
 	}
 

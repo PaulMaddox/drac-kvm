@@ -22,15 +22,20 @@ var _version = pflag.IntP("version", "v", -1, "iDRAC version (6 or 7) (supermicr
 var _delay = pflag.IntP("delay", "d", 10, "Number of seconds to delay for javaws to start up & read jnlp before deleting it")
 var _javaws = pflag.StringP("javaws", "j", DefaultJavaPath, "The path to javaws binary")
 
+const(
+	DefaultUsername = "root"
+	DefaultPassword = "calvin"
+)
+
 func promptPassword() string {
 	fmt.Print("Password: ")
 	return string(gopass.GetPasswd())
 }
 
 func main() {
-	var host string
-	var username = "root"
-	var password = "calvin"
+	var host string 
+	var username string
+	var password string
 
 	// Parse the CLI flags
 	pflag.Parse()
@@ -45,6 +50,28 @@ func main() {
 	cfg, _ := goconfig.LoadConfigFile(usr.HomeDir + "/.drackvmrc")
 	version := *_version
 
+	// Get the default username and password from the config
+        if cfg != nil {
+		_, err:= cfg.GetSection("defaults")
+		if err == nil {
+			log.Printf("Loading default username and password from configuration file")
+			uservalue, uerr := cfg.GetValue("defaults", "username")
+			passvalue, perr := cfg.GetValue("defaults", "password")
+
+			if uerr == nil {
+				username = uservalue
+			} else {
+				username = DefaultUsername
+			}
+			if perr == nil {
+				password = passvalue
+			} else {
+				password = DefaultPassword
+			}
+
+		}
+	}
+		
 	// Finding host in config file or using the one passed in param
 	host = *_host
 	hostFound := false
@@ -105,7 +132,7 @@ func main() {
 	defer os.Remove(filename)
 
 	// Launch it!
-	log.Printf("Launching DRAC KVM session to %s", drac.Host)
+	log.Printf("Launching DRAC KVM session to %s with %s", drac.Host, filename)
 	if err := exec.Command(*_javaws, filename).Start(); err != nil {
 		os.Remove(filename)
 		log.Fatalf("Unable to launch DRAC (%s)", err)

@@ -61,6 +61,13 @@ Configuration file
 You can create a configuration file
 ```bash
 $ cat ~/.drackvmrc
+# Override the hardcoded defaults for username and password.
+# Useful if your environment has consistent usernames and
+# passwords for the KVMs.
+[defaults]
+username = foo
+password = bar
+
 [192.168.0.42]
 username = foo
 password = bar

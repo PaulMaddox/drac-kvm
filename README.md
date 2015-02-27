@@ -43,7 +43,7 @@ Installing (via Go)
 
 If you already have Go configured on your system then you can just run the following to quickly install it:
 ```bash
-$ go install github.com/paulmaddox/drac-kvm
+$ go get github.com/paulmaddox/drac-kvm
 ```
 
 Installing (pre built binaries)

@@ -1,6 +1,9 @@
 Dell DRAC KVM Launcher
 =========
 
+> Notice: This repository is no longer actively maintained.
+> There is a more up to date fork at: [github.com/rockyluke/drac-kvm](https://github.com/rockyluke/drac-kvm)
+
 Fed up of logging into the DRAC web interface just to launch a KVM session?
 This simple Go program should help ease the pain.
 

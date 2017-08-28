@@ -1,5 +1,5 @@
 package main
 
-const(
-  DefaultJavaPath = "/usr/bin/javaws"
-)
+func DefaultJavaPath() string {
+	return "/usr/bin/javaws"
+}

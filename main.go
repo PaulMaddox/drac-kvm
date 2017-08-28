@@ -20,20 +20,21 @@ var _username = pflag.StringP("username", "u", "", "The DRAC username")
 var _password = pflag.BoolP("password", "p", false, "Prompt for password (optional, will use 'calvin' if not present)")
 var _version = pflag.IntP("version", "v", -1, "iDRAC version (6 or 7) (supermicro ikvm as 1)")
 var _delay = pflag.IntP("delay", "d", 10, "Number of seconds to delay for javaws to start up & read jnlp before deleting it")
-var _javaws = pflag.StringP("javaws", "j", DefaultJavaPath, "The path to javaws binary")
+var _javaws = pflag.StringP("javaws", "j", DefaultJavaPath(), "The path to javaws binary")
 
-const(
+const (
 	DefaultUsername = "root"
 	DefaultPassword = "calvin"
 )
 
 func promptPassword() string {
 	fmt.Print("Password: ")
-	return string(gopass.GetPasswd())
+	password, _ := gopass.GetPasswd()
+	return string(password)
 }
 
 func main() {
-	var host string 
+	var host string
 	var username string
 	var password string
 
@@ -51,8 +52,8 @@ func main() {
 	version := *_version
 
 	// Get the default username and password from the config
-        if cfg != nil {
-		_, err:= cfg.GetSection("defaults")
+	if cfg != nil {
+		_, err := cfg.GetSection("defaults")
 		if err == nil {
 			log.Printf("Loading default username and password from configuration file")
 			uservalue, uerr := cfg.GetValue("defaults", "username")
@@ -71,7 +72,7 @@ func main() {
 
 		}
 	}
-		
+
 	// Finding host in config file or using the one passed in param
 	host = *_host
 	hostFound := false
